@@ -20,9 +20,22 @@ interface DataTableProps {
   data: any[];
   onEdit?: (row: any) => void;
   onDelete?: (row: any) => void;
+  onToggle?: (row: any) => void;
+  editLabel?: string;
+  deleteLabel?: string;
+  toggleLabel?: string;
 }
 
-export default function DataTable({ columns, data, onEdit, onDelete }: DataTableProps) {
+export default function DataTable({ 
+  columns, 
+  data, 
+  onEdit, 
+  onDelete, 
+  onToggle,
+  editLabel = "Modifier",
+  deleteLabel = "Supprimer",
+  toggleLabel = "Activer/Désactiver"
+}: DataTableProps) {
   return (
     <div className="rounded-lg border">
       <Table>
@@ -31,7 +44,7 @@ export default function DataTable({ columns, data, onEdit, onDelete }: DataTable
             {columns.map((column) => (
               <TableHead key={column.key}>{column.label}</TableHead>
             ))}
-            <TableHead className="w-[70px]">Actions</TableHead>
+            {(onEdit || onDelete || onToggle) && <TableHead className="w-[70px]">Actions</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -49,38 +62,47 @@ export default function DataTable({ columns, data, onEdit, onDelete }: DataTable
                     {column.render ? column.render(row[column.key], row) : row[column.key]}
                   </TableCell>
                 ))}
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" data-testid={`button-actions-${idx}`}>
-                        <MoreHorizontal className="w-4 h-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem 
-                        onClick={() => {
-                          onEdit?.(row);
-                          console.log('Edit:', row);
-                        }}
-                        data-testid={`action-edit-${idx}`}
-                      >
-                        <Edit className="w-4 h-4 mr-2" />
-                        Modifier
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => {
-                          onDelete?.(row);
-                          console.log('Delete:', row);
-                        }}
-                        className="text-destructive"
-                        data-testid={`action-delete-${idx}`}
-                      >
-                        <Trash className="w-4 h-4 mr-2" />
-                        Supprimer
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
+                {(onEdit || onDelete || onToggle) && (
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" data-testid={`button-actions-${idx}`}>
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        {onEdit && (
+                          <DropdownMenuItem 
+                            onClick={() => onEdit(row)}
+                            data-testid={`action-edit-${idx}`}
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            {editLabel}
+                          </DropdownMenuItem>
+                        )}
+                        {onToggle && (
+                          <DropdownMenuItem 
+                            onClick={() => onToggle(row)}
+                            data-testid={`action-toggle-${idx}`}
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            {toggleLabel}
+                          </DropdownMenuItem>
+                        )}
+                        {onDelete && (
+                          <DropdownMenuItem 
+                            onClick={() => onDelete(row)}
+                            className="text-destructive"
+                            data-testid={`action-delete-${idx}`}
+                          >
+                            <Trash className="w-4 h-4 mr-2" />
+                            {deleteLabel}
+                          </DropdownMenuItem>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                )}
               </TableRow>
             ))
           )}

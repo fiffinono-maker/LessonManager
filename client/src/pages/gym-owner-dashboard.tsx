@@ -20,8 +20,8 @@ export default function GymOwnerDashboard() {
   const { data: allChallenges = [], refetch: refetchChallenges } = useChallenges();
   const deleteChallenge = useDeleteChallenge();
 
-  const myGym = gyms.find(g => g.ownerId === user?.id);
-  const challenges = allChallenges.filter(c => c.creatorId === user?.id && c.gymId === myGym?.id);
+  const myGym = gyms.find((g: any) => g.ownerId === user?.id);
+  const challenges = allChallenges.filter((c: any) => c.creatorId === user?.id && c.gymId === myGym?.id);
   
   const handleLogout = () => {
     logout();
@@ -29,7 +29,7 @@ export default function GymOwnerDashboard() {
   };
 
   const handleDeleteChallenge = async (challenge: any) => {
-    if (confirm(`Êtes-vous sûr de vouloir supprimer "${challenge.name}"?`)) {
+    if (confirm(`Êtes-vous sûr de vouloir supprimer "${challenge.title}"?`)) {
       await deleteChallenge.mutateAsync(challenge.id);
       refetchChallenges();
     }
@@ -81,7 +81,7 @@ export default function GymOwnerDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <StatsCard title="Capacité Salle" value={myGym?.capacity?.toString() || '-'} icon={Building2} />
           <StatsCard title="Statut" value={myGym?.status === 'approved' ? 'Approuvée' : myGym?.status === 'pending' ? 'En Attente' : myGym?.status === 'rejected' ? 'Rejetée' : 'Aucune'} icon={Users} />
-          <StatsCard title="Défis Actifs" value={challenges.filter(c => c.status === 'active').length.toString()} icon={Trophy} />
+          <StatsCard title="Défis Actifs" value={challenges.filter((c: any) => c.status === 'active').length.toString()} icon={Trophy} />
         </div>
 
         {!myGym ? (
@@ -136,7 +136,7 @@ export default function GymOwnerDashboard() {
                 <p className="text-sm text-muted-foreground mb-2">{myGym.description}</p>
               )}
               <div className="flex flex-wrap gap-2">
-                {myGym.equipment?.map((item, idx) => (
+                {myGym.equipment?.map((item: string, idx: number) => (
                   <Badge key={idx} variant="secondary">{item}</Badge>
                 ))}
               </div>
@@ -156,7 +156,7 @@ export default function GymOwnerDashboard() {
             </div>
             <DataTable 
               columns={challengeColumns}
-              data={challenges.map(c => ({ ...c, id: c.id }))}
+              data={challenges.map((c: any) => ({ ...c, id: c.id }))}
               onDelete={handleDeleteChallenge}
             />
           </div>

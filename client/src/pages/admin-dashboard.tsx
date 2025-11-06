@@ -7,10 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
-import { useUsers, useDeleteUser } from "@/hooks/useUsers";
+import { useUsers, useDeleteUser, useToggleUserStatus } from "@/hooks/useUsers";
 import { useGyms, useApproveGym, useRejectGym } from "@/hooks/useGyms";
 import { useBadges } from "@/hooks/useBadges";
 import { useChallenges } from "@/hooks/useChallenges";
+import type { User, Gym, Challenge } from "@shared/schema";
 
 export default function AdminDashboard() {
   const { user, logout } = useAuth();
@@ -22,6 +23,7 @@ export default function AdminDashboard() {
   const { data: challenges = [] } = useChallenges();
   
   const deleteUser = useDeleteUser();
+  const toggleUserStatus = useToggleUserStatus();
   const approveGym = useApproveGym();
   const rejectGym = useRejectGym();
 
@@ -30,8 +32,8 @@ export default function AdminDashboard() {
     navigate('/');
   };
 
-  const pendingGyms = gyms.filter(g => g.status === 'pending');
-  const activeChallenges = challenges.filter(c => c.status === 'active');
+  const pendingGyms = gyms.filter((g: Gym) => g.status === 'pending');
+  const activeChallenges = challenges.filter((c: Challenge) => c.status === 'active');
   
   const style = {
     "--sidebar-width": "16rem",
@@ -41,7 +43,7 @@ export default function AdminDashboard() {
     { 
       key: 'name', 
       label: 'Nom',
-      render: (value: string, row: any) => `${row.firstName} ${row.lastName}`
+      render: (value: string, row: User) => `${row.firstName} ${row.lastName}`
     },
     { key: 'email', label: 'Email' },
     { 
@@ -50,6 +52,15 @@ export default function AdminDashboard() {
       render: (value: string) => (
         <Badge variant={value === 'gym_owner' ? 'default' : value === 'super_admin' ? 'destructive' : 'secondary'}>
           {value === 'gym_owner' ? 'Propriétaire' : value === 'super_admin' ? 'Super Admin' : 'Client'}
+        </Badge>
+      )
+    },
+    { 
+      key: 'isActive', 
+      label: 'Statut',
+      render: (value: boolean) => (
+        <Badge variant={value ? 'default' : 'destructive'}>
+          {value ? 'Actif' : 'Désactivé'}
         </Badge>
       )
     },
@@ -79,17 +90,27 @@ export default function AdminDashboard() {
     },
   ];
 
-  const handleDeleteUser = async (user: any) => {
-    if (confirm(`Êtes-vous sûr de vouloir supprimer ${user.firstName} ${user.lastName}?`)) {
-      await deleteUser.mutateAsync(user.id);
+  const handleToggleUserStatus = async (userToToggle: User) => {
+    const action = userToToggle.isActive ? 'désactiver' : 'activer';
+    if (confirm(`Êtes-vous sûr de vouloir ${action} ${userToToggle.firstName} ${userToToggle.lastName}?`)) {
+      await toggleUserStatus.mutateAsync({ 
+        id: userToToggle.id, 
+        isActive: !userToToggle.isActive 
+      });
     }
   };
 
-  const handleApproveGym = async (gym: any) => {
+  const handleDeleteUser = async (userToDelete: User) => {
+    if (confirm(`Êtes-vous sûr de vouloir SUPPRIMER définitivement ${userToDelete.firstName} ${userToDelete.lastName}?`)) {
+      await deleteUser.mutateAsync(userToDelete.id);
+    }
+  };
+
+  const handleApproveGym = async (gym: Gym) => {
     await approveGym.mutateAsync(gym.id);
   };
 
-  const handleRejectGym = async (gym: any) => {
+  const handleRejectGym = async (gym: Gym) => {
     if (confirm(`Êtes-vous sûr de vouloir rejeter la salle "${gym.name}"?`)) {
       await rejectGym.mutateAsync(gym.id);
     }
@@ -113,7 +134,7 @@ export default function AdminDashboard() {
             <div className="p-8 space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatsCard title="Total Utilisateurs" value={users.length.toString()} icon={Users} />
-                <StatsCard title="Salles Partenaires" value={gyms.filter(g => g.status === 'approved').length.toString()} icon={Building2} trend={`${pendingGyms.length} en attente`} trendUp={false} />
+                <StatsCard title="Salles Partenaires" value={gyms.filter((g: Gym) => g.status === 'approved').length.toString()} icon={Building2} trend={`${pendingGyms.length} en attente`} trendUp={false} />
                 <StatsCard title="Défis Actifs" value={activeChallenges.length.toString()} icon={Trophy} />
                 <StatsCard title="Badges Créés" value={badges.length.toString()} icon={Award} />
               </div>
@@ -141,7 +162,10 @@ export default function AdminDashboard() {
                 <DataTable 
                   columns={userColumns}
                   data={users}
+                  onToggle={handleToggleUserStatus}
                   onDelete={handleDeleteUser}
+                  toggleLabel="Activer/Désactiver"
+                  deleteLabel="Supprimer"
                 />
               </div>
             </div>
