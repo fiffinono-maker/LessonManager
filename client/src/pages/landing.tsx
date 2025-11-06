@@ -1,0 +1,84 @@
+import Hero from "@/components/Hero";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Shield, Trophy, Users, Zap } from "lucide-react";
+
+export default function Landing() {
+  const features = [
+    {
+      icon: Trophy,
+      title: "Join Challenges",
+      description: "Participate in diverse fitness challenges tailored to your goals and fitness level"
+    },
+    {
+      icon: Users,
+      title: "Community Driven",
+      description: "Connect with fellow fitness enthusiasts and compete in group challenges"
+    },
+    {
+      icon: Zap,
+      title: "Track Progress",
+      description: "Monitor your workouts, calories burned, and achievements in real-time"
+    },
+    {
+      icon: Shield,
+      title: "Earn Rewards",
+      description: "Unlock badges and rewards as you complete challenges and reach milestones"
+    }
+  ];
+
+  return (
+    <div className="min-h-screen">
+      <Hero />
+      
+      <section className="py-20 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4 font-display">Why Choose TSPark?</h2>
+            <p className="text-xl text-muted-foreground">Everything you need to achieve your fitness goals</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((feature, idx) => (
+              <Card key={idx} className="hover-elevate">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <feature.icon className="w-8 h-8 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+                  <p className="text-sm text-muted-foreground">{feature.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-20 px-6 bg-primary/5">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl font-bold mb-4 font-display">Ready to Start Your Journey?</h2>
+          <p className="text-xl text-muted-foreground mb-8">
+            Join thousands of fitness enthusiasts already transforming their lives
+          </p>
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Button 
+              size="lg"
+              data-testid="button-signup"
+              onClick={() => console.log('Sign up clicked')}
+            >
+              Sign Up Now
+            </Button>
+            <Button 
+              size="lg"
+              variant="outline"
+              data-testid="button-gym-owner"
+              onClick={() => console.log('Gym owner clicked')}
+            >
+              I'm a Gym Owner
+            </Button>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
