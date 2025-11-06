@@ -1,0 +1,74 @@
+import {StudentMark} from "../models";
+import {readdir, stat, mkdir, readFile, writeFile} from "fs/promises";
+
+export class LessonService {
+
+    constructor(public readonly path: string) {
+    }
+
+    async getLessons(): Promise<string[]> {
+        try {
+            const files = await readdir(this.path);
+            const lessons = files.filter(f => f.endsWith('.marks'));
+            return lessons.map(f => f.slice(0, f.length - 6));
+        } catch {
+            return [];
+        }
+    }
+
+    async getStudentMarks(lesson: string, lastName?: string, firstName?: string): Promise<StudentMark[]> {
+        try {
+            const buff = await readFile(`${this.path}/${lesson}.marks`);
+            const str = buff.toString();
+            const lines = str.split('\n');
+            const students = lines.map(l => {
+                const parts = l.split('|');
+                return {
+                    lastName: parts[0],
+                    firstName: parts[1],
+                    mark: parseInt(parts[2])
+                }
+            });
+            return students.filter(s => {
+                if(lastName) {
+                    if(s.lastName !== lastName) return false;
+                }
+                if(firstName) {
+                    if(s.firstName !== firstName) return false;
+                }
+                return true;
+            });
+        } catch {
+            return [];
+        }
+    }
+
+    async createStudentMark(lesson: string, studentMark: StudentMark): Promise<void> {
+        await this.ensurePathExists();
+        const studentsMarks = await this.getStudentMarks(lesson);
+        let studentExists = false;
+        const lines = [];
+        for(const sm of studentsMarks) {
+            let str = `${sm.lastName}|${sm.firstName}|`;
+            if(studentMark.lastName === sm.lastName && studentMark.firstName === sm.firstName) {
+                str += studentMark.mark;
+                studentExists = true;
+            } else {
+                str += sm.mark;
+            }
+            lines.push(str);
+        }
+        if(!studentExists) {
+            lines.push(`${studentMark.lastName}|${studentMark.firstName}|${studentMark.mark}`);
+        }
+        await writeFile(`${this.path}/${lesson}.marks`, lines.join('\n'));
+    }
+
+    protected async ensurePathExists(): Promise<void> {
+        const stats = await stat(this.path)
+        if(stats.isDirectory()) {
+            return;
+        }
+        await mkdir(this.path);
+    }
+}
