@@ -5,3 +5,4 @@ export * from './challenge.controller';
 export * from './badge.controller';
 export * from './user.controller';
 export * from './training.controller';
+export * from './equipment.controller';

@@ -21,6 +21,21 @@ export class AuthService {
       throw new Error('User already exists');
     }
 
+    if (userData.role === 'client') {
+      if (!userData.gymId) {
+        throw new Error('Gym selection is required for clients');
+      }
+      
+      const gym = await storage.getGym(userData.gymId);
+      if (!gym) {
+        throw new Error('Selected gym does not exist');
+      }
+      
+      if (gym.status !== 'approved') {
+        throw new Error('Selected gym is not approved');
+      }
+    }
+
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     const user = await storage.createUser({
       ...userData,

@@ -1,11 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useCreateGym, useUpdateGym } from '@/hooks/useGyms';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { queryClient, apiRequest } from '@/lib/queryClient';
 import { Plus } from 'lucide-react';
+import type { Equipment } from '@shared/schema';
 
 type GymData = {
   id?: string;
@@ -15,7 +19,6 @@ type GymData = {
   phone: string;
   description: string;
   capacity: number;
-  equipment: string[];
   imageUrl?: string;
 };
 
@@ -36,35 +39,89 @@ export function GymDialog({ gym, ownerId, onSuccess, trigger }: GymDialogProps) 
     phone: gym?.phone || '',
     description: gym?.description || '',
     capacity: gym?.capacity || 50,
-    equipment: gym?.equipment || [],
     imageUrl: gym?.imageUrl || '',
   });
   
-  const [equipmentInput, setEquipmentInput] = useState(formData.equipment.join(', '));
+  const [selectedEquipment, setSelectedEquipment] = useState<Set<string>>(new Set());
+
+  const { data: allEquipment = [] } = useQuery<Equipment[]>({
+    queryKey: ['/api/equipment'],
+  });
+
+  const { data: gymEquipment = [] } = useQuery<Equipment[]>({
+    queryKey: ['/api/equipment/gym', gym?.id],
+    enabled: !!gym?.id,
+  });
+
+  useEffect(() => {
+    if (gymEquipment.length > 0) {
+      setSelectedEquipment(new Set(gymEquipment.map(e => e.id)));
+    }
+  }, [gymEquipment]);
 
   const createGym = useCreateGym();
   const updateGym = useUpdateGym();
 
+  const addGymEquipmentMutation = useMutation({
+    mutationFn: async (data: { gymId: string; equipmentId: string }) => {
+      const res = await apiRequest('POST', '/api/equipment/gym', data);
+      return await res.json();
+    },
+  });
+
+  const removeGymEquipmentMutation = useMutation({
+    mutationFn: async (data: { gymId: string; equipmentId: string }) => {
+      const res = await apiRequest('DELETE', `/api/equipment/gym/${data.gymId}/${data.equipmentId}`);
+      return await res.json();
+    },
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const equipmentArray = equipmentInput.split(',').map(item => item.trim()).filter(Boolean);
-    const gymData = {
-      ...formData,
-      equipment: equipmentArray,
-    };
 
     try {
+      let gymId = gym?.id;
+      
       if (gym?.id) {
-        await updateGym.mutateAsync({ id: gym.id, data: gymData });
+        await updateGym.mutateAsync({ id: gym.id, data: formData });
       } else {
-        await createGym.mutateAsync(gymData);
+        const newGym = await createGym.mutateAsync(formData);
+        gymId = newGym.id;
       }
+
+      if (gymId) {
+        const currentEquipmentIds = new Set(gymEquipment.map(e => e.id));
+        const selectedEquipmentIds = selectedEquipment;
+
+        const toAdd = Array.from(selectedEquipmentIds).filter(id => !currentEquipmentIds.has(id));
+        const toRemove = Array.from(currentEquipmentIds).filter(id => !selectedEquipmentIds.has(id));
+
+        for (const equipmentId of toRemove) {
+          await removeGymEquipmentMutation.mutateAsync({ gymId, equipmentId });
+        }
+
+        for (const equipmentId of toAdd) {
+          await addGymEquipmentMutation.mutateAsync({ gymId, equipmentId });
+        }
+
+        queryClient.invalidateQueries({ queryKey: ['/api/equipment/gym', gymId] });
+      }
+
       setOpen(false);
       onSuccess?.();
     } catch (error) {
       console.error('Error saving gym:', error);
     }
+  };
+
+  const toggleEquipment = (equipmentId: string) => {
+    const newSelected = new Set(selectedEquipment);
+    if (newSelected.has(equipmentId)) {
+      newSelected.delete(equipmentId);
+    } else {
+      newSelected.add(equipmentId);
+    }
+    setSelectedEquipment(newSelected);
   };
 
   return (
@@ -137,13 +194,31 @@ export function GymDialog({ gym, ownerId, onSuccess, trigger }: GymDialogProps) 
           </div>
 
           <div>
-            <Label htmlFor="equipment">Équipements (séparés par des virgules)</Label>
-            <Input
-              id="equipment"
-              value={equipmentInput}
-              onChange={(e) => setEquipmentInput(e.target.value)}
-              placeholder="Treadmills, Free Weights, Yoga Studio"
-            />
+            <Label>Équipements Disponibles</Label>
+            <div className="border rounded-md p-4 space-y-2 max-h-40 overflow-y-auto">
+              {allEquipment.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Aucun équipement disponible. Contactez l'administrateur.</p>
+              ) : (
+                allEquipment.map((equipment) => (
+                  <div key={equipment.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`equipment-${equipment.id}`}
+                      checked={selectedEquipment.has(equipment.id)}
+                      onCheckedChange={() => toggleEquipment(equipment.id)}
+                    />
+                    <label
+                      htmlFor={`equipment-${equipment.id}`}
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                    >
+                      {equipment.name}
+                      {equipment.description && (
+                        <span className="text-muted-foreground ml-1">- {equipment.description}</span>
+                      )}
+                    </label>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
 
           <div>

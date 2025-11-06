@@ -16,7 +16,8 @@ import {
   Award, 
   Users,
   Settings,
-  Building2
+  Building2,
+  Wrench
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
@@ -24,7 +25,9 @@ const adminItems = [
   { title: "Tableau de bord", url: "/admin", icon: LayoutDashboard },
   { title: "Salles", url: "/admin/gyms", icon: Building2 },
   { title: "Exercices", url: "/admin/exercises", icon: Dumbbell },
+  { title: "Équipements", url: "/admin/equipment", icon: Wrench },
   { title: "Badges", url: "/admin/badges", icon: Award },
+  { title: "Utilisateurs", url: "/admin/users", icon: Users },
 ];
 
 export default function AppSidebar() {

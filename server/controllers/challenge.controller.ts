@@ -10,8 +10,13 @@ export class ChallengeController {
 
     router.get('/', async (req: Request, res: Response) => {
       try {
-        const { status } = req.query;
-        const challenges = await this.challengeService.getChallenges(status as any);
+        const { status, gymId } = req.query;
+        let challenges;
+        if (gymId) {
+          challenges = await this.challengeService.getChallengesByGym(gymId as string);
+        } else {
+          challenges = await this.challengeService.getChallenges(status as any);
+        }
         res.json(challenges);
       } catch (error) {
         res.status(500).json({ error: (error as Error).message });

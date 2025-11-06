@@ -21,8 +21,16 @@ export class ChallengeService {
     return storage.getChallengesByCreator(creatorId);
   }
 
+  async getChallengesByGym(gymId: string): Promise<Challenge[]> {
+    return storage.getChallengesByGym(gymId);
+  }
+
   async createChallenge(challengeData: InsertChallenge): Promise<Challenge> {
     return storage.createChallenge(challengeData);
+  }
+
+  async updateChallenge(id: string, challengeData: Partial<InsertChallenge>): Promise<void> {
+    await storage.updateChallenge(id, challengeData);
   }
 
   async updateChallengeStatus(id: string, status: 'draft' | 'active' | 'completed' | 'cancelled'): Promise<void> {

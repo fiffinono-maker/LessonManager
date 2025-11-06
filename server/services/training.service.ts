@@ -1,5 +1,5 @@
 import { storage } from '../storage';
-import type { InsertTrainingSession, TrainingSession } from '@shared/schema';
+import type { InsertTrainingSession, TrainingSession, InsertSessionExercise, SessionExercise } from '@shared/schema';
 
 export class TrainingService {
   async createSession(sessionData: InsertTrainingSession): Promise<TrainingSession> {
@@ -8,6 +8,14 @@ export class TrainingService {
 
   async getUserSessions(userId: string): Promise<TrainingSession[]> {
     return storage.getUserTrainingSessions(userId);
+  }
+
+  async createSessionExercise(sessionExerciseData: InsertSessionExercise): Promise<SessionExercise> {
+    return storage.createSessionExercise(sessionExerciseData);
+  }
+
+  async getSessionExercises(sessionId: string): Promise<SessionExercise[]> {
+    return storage.getSessionExercises(sessionId);
   }
 
   async getUserPoints(userId: string): Promise<number> {

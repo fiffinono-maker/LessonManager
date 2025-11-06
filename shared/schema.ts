@@ -15,6 +15,7 @@ export const users = pgTable("users", {
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
   role: roleEnum("role").notNull().default('client'),
+  gymId: varchar("gym_id"),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
@@ -27,9 +28,23 @@ export const gyms = pgTable("gyms", {
   phone: text("phone"),
   description: text("description"),
   capacity: integer("capacity").notNull(),
-  equipment: text("equipment").array().notNull().default(sql`ARRAY[]::text[]`),
   imageUrl: text("image_url"),
   status: gymStatusEnum("status").notNull().default('pending'),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const equipment = pgTable("equipment", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const gymEquipment = pgTable("gym_equipment", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  gymId: varchar("gym_id").notNull().references(() => gyms.id),
+  equipmentId: varchar("equipment_id").notNull().references(() => equipment.id),
+  quantity: integer("quantity").notNull().default(1),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
@@ -87,9 +102,18 @@ export const trainingSessions = pgTable("training_sessions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull().references(() => users.id),
   challengeId: varchar("challenge_id").references(() => challenges.id),
-  caloriesBurned: integer("calories_burned").notNull(),
+  caloriesBurned: integer("calories_burned"),
   durationMinutes: integer("duration_minutes").notNull(),
   notes: text("notes"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const sessionExercises = pgTable("session_exercises", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  sessionId: varchar("session_id").notNull().references(() => trainingSessions.id),
+  exerciseId: varchar("exercise_id").notNull().references(() => exercises.id),
+  repetitions: integer("repetitions"),
+  restTimeSeconds: integer("rest_time_seconds"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
@@ -135,6 +159,26 @@ export const insertTrainingSessionSchema = createInsertSchema(trainingSessions).
   createdAt: true,
 });
 
+export const insertEquipmentSchema = createInsertSchema(equipment).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertGymEquipmentSchema = createInsertSchema(gymEquipment).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertSessionExerciseSchema = createInsertSchema(sessionExercises).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertChallengeParticipantSchema = createInsertSchema(challengeParticipants).omit({
+  id: true,
+  joinedAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type InsertGym = z.infer<typeof insertGymSchema>;
@@ -143,10 +187,17 @@ export type InsertExercise = z.infer<typeof insertExerciseSchema>;
 export type Exercise = typeof exercises.$inferSelect;
 export type InsertChallenge = z.infer<typeof insertChallengeSchema>;
 export type Challenge = typeof challenges.$inferSelect;
+export type InsertChallengeParticipant = z.infer<typeof insertChallengeParticipantSchema>;
 export type ChallengeParticipant = typeof challengeParticipants.$inferSelect;
 export type InsertBadge = z.infer<typeof insertBadgeSchema>;
 export type Badge = typeof badges.$inferSelect;
 export type UserBadge = typeof userBadges.$inferSelect;
 export type InsertTrainingSession = z.infer<typeof insertTrainingSessionSchema>;
 export type TrainingSession = typeof trainingSessions.$inferSelect;
+export type InsertEquipment = z.infer<typeof insertEquipmentSchema>;
+export type Equipment = typeof equipment.$inferSelect;
+export type InsertGymEquipment = z.infer<typeof insertGymEquipmentSchema>;
+export type GymEquipment = typeof gymEquipment.$inferSelect;
+export type InsertSessionExercise = z.infer<typeof insertSessionExerciseSchema>;
+export type SessionExercise = typeof sessionExercises.$inferSelect;
 export type UserPoints = typeof userPoints.$inferSelect;

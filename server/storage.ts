@@ -1,10 +1,12 @@
 import { db } from "./db";
 import { 
   users, gyms, exercises, challenges, challengeParticipants, 
-  badges, userBadges, trainingSessions, userPoints,
+  badges, userBadges, trainingSessions, userPoints, equipment, gymEquipment, sessionExercises,
   type User, type InsertUser, type Gym, type InsertGym, 
   type Exercise, type InsertExercise, type Challenge, type InsertChallenge,
-  type Badge, type InsertBadge, type TrainingSession, type InsertTrainingSession
+  type Badge, type InsertBadge, type TrainingSession, type InsertTrainingSession,
+  type Equipment, type InsertEquipment, type GymEquipment, type InsertGymEquipment,
+  type SessionExercise, type InsertSessionExercise
 } from "@shared/schema";
 import { eq, and, desc, sql } from "drizzle-orm";
 
@@ -33,9 +35,11 @@ export interface IStorage {
   
   getChallenge(id: string): Promise<Challenge | undefined>;
   getChallengesByCreator(creatorId: string): Promise<Challenge[]>;
+  getChallengesByGym(gymId: string): Promise<Challenge[]>;
   getChallengesByStatus(status: 'draft' | 'active' | 'completed' | 'cancelled'): Promise<Challenge[]>;
   getAllChallenges(): Promise<Challenge[]>;
   createChallenge(challenge: InsertChallenge): Promise<Challenge>;
+  updateChallenge(id: string, challenge: Partial<InsertChallenge>): Promise<void>;
   updateChallengeStatus(id: string, status: 'draft' | 'active' | 'completed' | 'cancelled'): Promise<void>;
   deleteChallenge(id: string): Promise<void>;
   
@@ -52,6 +56,19 @@ export interface IStorage {
   
   createTrainingSession(session: InsertTrainingSession): Promise<TrainingSession>;
   getUserTrainingSessions(userId: string): Promise<TrainingSession[]>;
+  
+  createSessionExercise(sessionExercise: InsertSessionExercise): Promise<SessionExercise>;
+  getSessionExercises(sessionId: string): Promise<SessionExercise[]>;
+  
+  getEquipment(id: string): Promise<Equipment | undefined>;
+  getAllEquipment(): Promise<Equipment[]>;
+  createEquipment(equipment: InsertEquipment): Promise<Equipment>;
+  updateEquipment(id: string, equipment: Partial<InsertEquipment>): Promise<void>;
+  deleteEquipment(id: string): Promise<void>;
+  
+  addGymEquipment(gymEquipment: InsertGymEquipment): Promise<GymEquipment>;
+  getGymEquipment(gymId: string): Promise<Equipment[]>;
+  removeGymEquipment(gymId: string, equipmentId: string): Promise<void>;
   
   getUserPoints(userId: string): Promise<number>;
   updateUserPoints(userId: string, points: number): Promise<void>;
@@ -152,6 +169,10 @@ export class DbStorage implements IStorage {
     return db.select().from(challenges).where(eq(challenges.creatorId, creatorId));
   }
 
+  async getChallengesByGym(gymId: string): Promise<Challenge[]> {
+    return db.select().from(challenges).where(eq(challenges.gymId, gymId));
+  }
+
   async getChallengesByStatus(status: 'draft' | 'active' | 'completed' | 'cancelled'): Promise<Challenge[]> {
     return db.select().from(challenges).where(eq(challenges.status, status));
   }
@@ -163,6 +184,10 @@ export class DbStorage implements IStorage {
   async createChallenge(challenge: InsertChallenge): Promise<Challenge> {
     const result = await db.insert(challenges).values(challenge).returning();
     return result[0];
+  }
+
+  async updateChallenge(id: string, challenge: Partial<InsertChallenge>): Promise<void> {
+    await db.update(challenges).set(challenge).where(eq(challenges.id, id));
   }
 
   async updateChallengeStatus(id: string, status: 'draft' | 'active' | 'completed' | 'cancelled'): Promise<void> {
@@ -224,13 +249,64 @@ export class DbStorage implements IStorage {
 
   async createTrainingSession(session: InsertTrainingSession): Promise<TrainingSession> {
     const result = await db.insert(trainingSessions).values(session).returning();
-    const points = Math.floor(session.caloriesBurned / 10);
-    await this.updateUserPoints(session.userId, points);
+    if (session.caloriesBurned) {
+      const points = Math.floor(session.caloriesBurned / 10);
+      await this.updateUserPoints(session.userId, points);
+    }
     return result[0];
   }
 
   async getUserTrainingSessions(userId: string): Promise<TrainingSession[]> {
     return db.select().from(trainingSessions).where(eq(trainingSessions.userId, userId)).orderBy(desc(trainingSessions.createdAt));
+  }
+
+  async createSessionExercise(sessionExercise: InsertSessionExercise): Promise<SessionExercise> {
+    const result = await db.insert(sessionExercises).values(sessionExercise).returning();
+    return result[0];
+  }
+
+  async getSessionExercises(sessionId: string): Promise<SessionExercise[]> {
+    return db.select().from(sessionExercises).where(eq(sessionExercises.sessionId, sessionId));
+  }
+
+  async getEquipment(id: string): Promise<Equipment | undefined> {
+    const result = await db.select().from(equipment).where(eq(equipment.id, id));
+    return result[0];
+  }
+
+  async getAllEquipment(): Promise<Equipment[]> {
+    return db.select().from(equipment);
+  }
+
+  async createEquipment(equipmentData: InsertEquipment): Promise<Equipment> {
+    const result = await db.insert(equipment).values(equipmentData).returning();
+    return result[0];
+  }
+
+  async updateEquipment(id: string, equipmentData: Partial<InsertEquipment>): Promise<void> {
+    await db.update(equipment).set(equipmentData).where(eq(equipment.id, id));
+  }
+
+  async deleteEquipment(id: string): Promise<void> {
+    await db.delete(equipment).where(eq(equipment.id, id));
+  }
+
+  async addGymEquipment(gymEquipmentData: InsertGymEquipment): Promise<GymEquipment> {
+    const result = await db.insert(gymEquipment).values(gymEquipmentData).returning();
+    return result[0];
+  }
+
+  async getGymEquipment(gymId: string): Promise<Equipment[]> {
+    const result = await db.select({ equipment: equipment })
+      .from(gymEquipment)
+      .innerJoin(equipment, eq(gymEquipment.equipmentId, equipment.id))
+      .where(eq(gymEquipment.gymId, gymId));
+    return result.map(r => r.equipment);
+  }
+
+  async removeGymEquipment(gymId: string, equipmentId: string): Promise<void> {
+    await db.delete(gymEquipment)
+      .where(and(eq(gymEquipment.gymId, gymId), eq(gymEquipment.equipmentId, equipmentId)));
   }
 
   async getUserPoints(userId: string): Promise<number> {

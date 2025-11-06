@@ -10,6 +10,8 @@ import AdminDashboard from "@/pages/admin-dashboard";
 import AdminExercises from "@/pages/admin/exercises";
 import AdminBadges from "@/pages/admin/badges";
 import AdminGyms from "@/pages/admin/gyms";
+import AdminEquipment from "@/pages/admin/equipment";
+import AdminUsers from "@/pages/admin/users";
 import GymOwnerDashboard from "@/pages/gym-owner-dashboard";
 import ClientDashboard from "@/pages/client-dashboard";
 import NotFound from "@/pages/not-found";
@@ -23,6 +25,8 @@ function Router() {
       <Route path="/admin/exercises" component={AdminExercises} />
       <Route path="/admin/badges" component={AdminBadges} />
       <Route path="/admin/gyms" component={AdminGyms} />
+      <Route path="/admin/equipment" component={AdminEquipment} />
+      <Route path="/admin/users" component={AdminUsers} />
       <Route path="/gym-owner" component={GymOwnerDashboard} />
       <Route path="/client" component={ClientDashboard} />
       <Route component={NotFound} />

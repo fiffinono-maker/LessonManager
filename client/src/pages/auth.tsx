@@ -1,14 +1,18 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/hooks/useAuth';
 import { useLogin, useRegister } from '@/hooks/useAuth';
 import { useLocation } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
+import { AlertCircle } from 'lucide-react';
+import type { Gym } from '@shared/schema';
 
 export default function AuthPage() {
   const { setAuth } = useAuth();
@@ -22,6 +26,12 @@ export default function AuthPage() {
     firstName: '',
     lastName: '',
     role: 'client' as 'super_admin' | 'gym_owner' | 'client',
+    gymId: '',
+  });
+
+  const { data: approvedGyms = [], isLoading: gymsLoading } = useQuery<Gym[]>({
+    queryKey: ['/api/gyms?status=approved'],
+    enabled: true,
   });
 
   const loginMutation = useLogin();
@@ -57,8 +67,31 @@ export default function AuthPage() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (registerData.role === 'client' && !registerData.gymId) {
+      toast({
+        title: 'Salle requise',
+        description: 'Veuillez sélectionner une salle de sport',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (registerData.role === 'client' && approvedGyms.length === 0) {
+      toast({
+        title: 'Aucune salle disponible',
+        description: 'Impossible de s\'inscrire car aucune salle n\'est approuvée',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     try {
-      const result = await registerMutation.mutateAsync(registerData);
+      const dataToSubmit = registerData.role === 'client' 
+        ? registerData 
+        : { ...registerData, gymId: undefined };
+      
+      const result = await registerMutation.mutateAsync(dataToSubmit);
       setAuth(result.user, result.accessToken);
       
       toast({
@@ -179,7 +212,7 @@ export default function AuthPage() {
                   <Label htmlFor="role">Rôle</Label>
                   <Select 
                     value={registerData.role} 
-                    onValueChange={(value: any) => setRegisterData({ ...registerData, role: value })}
+                    onValueChange={(value: any) => setRegisterData({ ...registerData, role: value, gymId: '' })}
                   >
                     <SelectTrigger data-testid="select-role">
                       <SelectValue />
@@ -191,7 +224,48 @@ export default function AuthPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <Button type="submit" className="w-full" data-testid="button-register" disabled={registerMutation.isPending}>
+
+                {registerData.role === 'client' && (
+                  <div>
+                    <Label htmlFor="gym">Salle de Sport *</Label>
+                    {gymsLoading ? (
+                      <p className="text-sm text-muted-foreground">Chargement des salles...</p>
+                    ) : approvedGyms.length === 0 ? (
+                      <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>
+                          Aucune salle de sport n'est actuellement disponible. Vous ne pouvez pas vous inscrire en tant que client pour le moment.
+                        </AlertDescription>
+                      </Alert>
+                    ) : (
+                      <Select 
+                        value={registerData.gymId} 
+                        onValueChange={(value) => setRegisterData({ ...registerData, gymId: value })}
+                      >
+                        <SelectTrigger data-testid="select-gym">
+                          <SelectValue placeholder="Sélectionnez votre salle" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {approvedGyms.map((gym) => (
+                            <SelectItem key={gym.id} value={gym.id}>
+                              {gym.name} - {gym.address}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </div>
+                )}
+
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  data-testid="button-register" 
+                  disabled={
+                    registerMutation.isPending || 
+                    (registerData.role === 'client' && approvedGyms.length === 0)
+                  }
+                >
                   {registerMutation.isPending ? 'Inscription...' : 'S\'inscrire'}
                 </Button>
               </form>

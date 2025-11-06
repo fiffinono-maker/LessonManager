@@ -7,7 +7,8 @@ import {
   ChallengeController,
   BadgeController,
   UserController,
-  TrainingController
+  TrainingController,
+  EquipmentController
 } from "./controllers";
 import {
   AuthService,
@@ -16,7 +17,8 @@ import {
   ChallengeService,
   BadgeService,
   UserService,
-  TrainingService
+  TrainingService,
+  EquipmentService
 } from "./services";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -27,6 +29,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const badgeService = new BadgeService();
   const userService = new UserService();
   const trainingService = new TrainingService();
+  const equipmentService = new EquipmentService();
 
   const authController = new AuthController(authService);
   const gymController = new GymController(gymService);
@@ -35,6 +38,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const badgeController = new BadgeController(badgeService);
   const userController = new UserController(userService, badgeService, challengeService, trainingService);
   const trainingController = new TrainingController(trainingService);
+  const equipmentController = new EquipmentController(equipmentService);
 
   app.use('/api/auth', authController.buildRouter());
   app.use('/api/gyms', gymController.buildRouter());
@@ -43,6 +47,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api/badges', badgeController.buildRouter());
   app.use('/api/users', userController.buildRouter());
   app.use('/api/training', trainingController.buildRouter());
+  app.use('/api/equipment', equipmentController.buildRouter());
 
   const httpServer = createServer(app);
 
