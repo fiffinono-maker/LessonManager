@@ -2,8 +2,10 @@ import Hero from "@/components/Hero";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Shield, Trophy, Users, Zap } from "lucide-react";
+import { useLocation } from "wouter";
 
 export default function Landing() {
+  const [, navigate] = useLocation();
   const features = [
     {
       icon: Trophy,
@@ -31,7 +33,7 @@ export default function Landing() {
     <div className="min-h-screen">
       <Hero />
       
-      <section className="py-20 px-6">
+      <section id="features" className="py-20 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4 font-display">Pourquoi Choisir TSPark ?</h2>
@@ -64,7 +66,7 @@ export default function Landing() {
             <Button 
               size="lg"
               data-testid="button-signup"
-              onClick={() => console.log('Sign up clicked')}
+              onClick={() => navigate('/auth')}
             >
               S'inscrire Maintenant
             </Button>
@@ -72,7 +74,7 @@ export default function Landing() {
               size="lg"
               variant="outline"
               data-testid="button-gym-owner"
-              onClick={() => console.log('Gym owner clicked')}
+              onClick={() => navigate('/auth')}
             >
               Je suis Propriétaire de Salle
             </Button>

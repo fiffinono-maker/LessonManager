@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
 import heroImage from "@assets/generated_images/Gym_training_hero_image_df7c19ae.png";
 import { Dumbbell, Users, Trophy } from "lucide-react";
+import { useLocation } from "wouter";
 
 export default function Hero() {
+  const [, navigate] = useLocation();
+  
   return (
     <div className="relative min-h-[600px] flex items-center justify-center overflow-hidden">
       <div 
@@ -25,7 +28,7 @@ export default function Hero() {
             size="lg" 
             variant="default"
             data-testid="button-get-started"
-            onClick={() => console.log('Get started clicked')}
+            onClick={() => navigate('/auth')}
           >
             Commencer
           </Button>
@@ -34,7 +37,10 @@ export default function Hero() {
             variant="outline"
             className="bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20"
             data-testid="button-learn-more"
-            onClick={() => console.log('Learn more clicked')}
+            onClick={() => {
+              const element = document.getElementById('features');
+              element?.scrollIntoView({ behavior: 'smooth' });
+            }}
           >
             En Savoir Plus
           </Button>
