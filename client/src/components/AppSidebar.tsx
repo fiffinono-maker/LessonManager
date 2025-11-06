@@ -18,18 +18,18 @@ import {
   Settings,
   Building2
 } from "lucide-react";
+import { Link, useLocation } from "wouter";
 
 const adminItems = [
   { title: "Tableau de bord", url: "/admin", icon: LayoutDashboard },
   { title: "Salles", url: "/admin/gyms", icon: Building2 },
   { title: "Exercices", url: "/admin/exercises", icon: Dumbbell },
-  { title: "Défis", url: "/admin/challenges", icon: Trophy },
   { title: "Badges", url: "/admin/badges", icon: Award },
-  { title: "Utilisateurs", url: "/admin/users", icon: Users },
-  { title: "Paramètres", url: "/admin/settings", icon: Settings },
 ];
 
 export default function AppSidebar() {
+  const [location] = useLocation();
+
   return (
     <Sidebar>
       <SidebarHeader className="p-6 border-b">
@@ -50,11 +50,15 @@ export default function AppSidebar() {
             <SidebarMenu>
               {adminItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild data-testid={`nav-${item.title.toLowerCase()}`}>
-                    <a href={item.url} onClick={(e) => { e.preventDefault(); console.log(`Navigate to ${item.url}`); }}>
+                  <SidebarMenuButton 
+                    asChild 
+                    data-testid={`nav-${item.title.toLowerCase()}`}
+                    isActive={location === item.url}
+                  >
+                    <Link href={item.url}>
                       <item.icon className="w-4 h-4" />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
