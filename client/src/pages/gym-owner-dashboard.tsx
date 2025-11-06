@@ -8,42 +8,42 @@ import gymImage from "@assets/generated_images/Gym_facility_exterior_c300500a.pn
 
 export default function GymOwnerDashboard() {
   const challenges = [
-    { id: '1', name: 'Summer Shred Challenge', participants: 45, status: 'Active', startDate: '2024-01-01' },
-    { id: '2', name: 'Strength Builder', participants: 23, status: 'Active', startDate: '2024-01-10' },
-    { id: '3', name: 'Cardio Blast', participants: 67, status: 'Completed', startDate: '2023-12-15' },
+    { id: '1', name: 'Défi Transformation Été', participants: 45, status: 'Actif', startDate: '01/01/2024' },
+    { id: '2', name: 'Programme Force', participants: 23, status: 'Actif', startDate: '10/01/2024' },
+    { id: '3', name: 'Cardio Intensif', participants: 67, status: 'Terminé', startDate: '15/12/2023' },
   ];
 
   const challengeColumns = [
-    { key: 'name', label: 'Challenge Name' },
+    { key: 'name', label: 'Nom du Défi' },
     { key: 'participants', label: 'Participants' },
     { 
       key: 'status', 
-      label: 'Status',
+      label: 'Statut',
       render: (value: string) => (
-        <Badge className={value === 'Active' ? 'bg-green-500/10 text-green-700 dark:text-green-400' : 'bg-gray-500/10 text-gray-700 dark:text-gray-400'}>
+        <Badge className={value === 'Actif' ? 'bg-green-500/10 text-green-700 dark:text-green-400' : 'bg-gray-500/10 text-gray-700 dark:text-gray-400'}>
           {value}
         </Badge>
       )
     },
-    { key: 'startDate', label: 'Start Date' },
+    { key: 'startDate', label: 'Date de Début' },
   ];
 
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold font-display">Gym Owner Dashboard</h1>
+          <h1 className="text-2xl font-bold font-display">Tableau de Bord Propriétaire</h1>
           <Button data-testid="button-logout" variant="outline" onClick={() => console.log('Logout')}>
-            Logout
+            Déconnexion
           </Button>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <StatsCard title="Gym Capacity" value="150" icon={Building2} />
-          <StatsCard title="Active Members" value="89" icon={Users} trend="59% capacity" trendUp={true} />
-          <StatsCard title="Active Challenges" value="2" icon={Trophy} />
+          <StatsCard title="Capacité Salle" value="150" icon={Building2} />
+          <StatsCard title="Membres Actifs" value="89" icon={Users} trend="59% de capacité" trendUp={true} />
+          <StatsCard title="Défis Actifs" value="2" icon={Trophy} />
         </div>
 
         <Card>
@@ -52,10 +52,10 @@ export default function GymOwnerDashboard() {
               <img src={gymImage} alt="Gym" className="w-24 h-24 rounded-lg object-cover" />
               <div className="flex-1">
                 <CardTitle className="text-2xl mb-1">Elite Fitness Center</CardTitle>
-                <p className="text-muted-foreground">123 Main Street, Downtown</p>
+                <p className="text-muted-foreground">123 Rue Principale, Centre-ville</p>
               </div>
               <Button data-testid="button-edit-gym">
-                Edit Details
+                Modifier Détails
               </Button>
             </div>
           </CardHeader>
@@ -71,10 +71,10 @@ export default function GymOwnerDashboard() {
 
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-semibold">My Challenges</h2>
+            <h2 className="text-2xl font-semibold">Mes Défis</h2>
             <Button data-testid="button-create-challenge">
               <Plus className="w-4 h-4 mr-2" />
-              Create Challenge
+              Créer un Défi
             </Button>
           </div>
           <DataTable 

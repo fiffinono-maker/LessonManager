@@ -14,10 +14,10 @@ export default function Hero() {
       
       <div className="relative z-10 max-w-4xl mx-auto px-6 text-center text-white">
         <h1 className="text-5xl md:text-6xl font-bold mb-6 font-display">
-          Transform Your Fitness Journey
+          Transformez Votre Parcours Fitness
         </h1>
         <p className="text-xl md:text-2xl mb-8 text-white/90">
-          Join challenges, track progress, and compete with a community of fitness enthusiasts
+          Rejoignez des défis, suivez vos progrès et défiez une communauté de passionnés de fitness
         </p>
         
         <div className="flex flex-wrap gap-4 justify-center mb-12">
@@ -27,7 +27,7 @@ export default function Hero() {
             data-testid="button-get-started"
             onClick={() => console.log('Get started clicked')}
           >
-            Get Started
+            Commencer
           </Button>
           <Button 
             size="lg" 
@@ -36,7 +36,7 @@ export default function Hero() {
             data-testid="button-learn-more"
             onClick={() => console.log('Learn more clicked')}
           >
-            Learn More
+            En Savoir Plus
           </Button>
         </div>
 
@@ -46,21 +46,21 @@ export default function Hero() {
               <Users className="w-6 h-6" />
             </div>
             <div className="text-3xl font-bold">10K+</div>
-            <div className="text-sm text-white/80">Active Users</div>
+            <div className="text-sm text-white/80">Utilisateurs Actifs</div>
           </div>
           <div className="flex flex-col items-center gap-2">
             <div className="w-12 h-12 rounded-lg bg-primary/20 backdrop-blur-sm flex items-center justify-center">
               <Trophy className="w-6 h-6" />
             </div>
             <div className="text-3xl font-bold">500+</div>
-            <div className="text-sm text-white/80">Challenges Completed</div>
+            <div className="text-sm text-white/80">Défis Complétés</div>
           </div>
           <div className="flex flex-col items-center gap-2">
             <div className="w-12 h-12 rounded-lg bg-primary/20 backdrop-blur-sm flex items-center justify-center">
               <Dumbbell className="w-6 h-6" />
             </div>
             <div className="text-3xl font-bold">200+</div>
-            <div className="text-sm text-white/80">Partner Gyms</div>
+            <div className="text-sm text-white/80">Salles Partenaires</div>
           </div>
         </div>
       </div>

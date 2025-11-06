@@ -20,6 +20,12 @@ export default function GymCard({ id, name, address, capacity, equipment, status
     rejected: 'bg-red-500/10 text-red-700 dark:text-red-400'
   };
 
+  const statusLabels = {
+    approved: 'Approuvée',
+    pending: 'En attente',
+    rejected: 'Rejetée'
+  };
+
   return (
     <Card className="overflow-hidden hover-elevate" data-testid={`card-gym-${id}`}>
       <div className="aspect-[4/3] relative overflow-hidden">
@@ -30,7 +36,7 @@ export default function GymCard({ id, name, address, capacity, equipment, status
         />
         <div className="absolute top-3 right-3">
           <Badge className={statusColors[status]}>
-            {status.charAt(0).toUpperCase() + status.slice(1)}
+            {statusLabels[status]}
           </Badge>
         </div>
       </div>
@@ -45,7 +51,7 @@ export default function GymCard({ id, name, address, capacity, equipment, status
           </div>
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4 flex-shrink-0" />
-            <span>Capacity: {capacity} people</span>
+            <span>Capacité: {capacity} personnes</span>
           </div>
           <div className="flex items-start gap-2">
             <Dumbbell className="w-4 h-4 flex-shrink-0 mt-0.5" />
@@ -72,7 +78,7 @@ export default function GymCard({ id, name, address, capacity, equipment, status
           data-testid={`button-view-gym-${id}`}
           onClick={() => console.log(`View gym ${id}`)}
         >
-          View Details
+          Voir Détails
         </Button>
         {status === 'pending' && (
           <Button 
@@ -80,7 +86,7 @@ export default function GymCard({ id, name, address, capacity, equipment, status
             data-testid={`button-approve-gym-${id}`}
             onClick={() => console.log(`Approve gym ${id}`)}
           >
-            Approve
+            Approuver
           </Button>
         )}
       </CardFooter>

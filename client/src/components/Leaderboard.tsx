@@ -20,7 +20,7 @@ export default function Leaderboard({ entries }: LeaderboardProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Trophy className="w-5 h-5 text-primary" />
-          Top Performers
+          Meilleurs Performeurs
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
@@ -58,7 +58,7 @@ export default function Leaderboard({ entries }: LeaderboardProps) {
               
               <div className="text-right">
                 <div className="font-bold text-primary">{entry.points.toLocaleString()}</div>
-                <div className="text-xs text-muted-foreground">points</div>
+                <div className="text-xs text-muted-foreground">pts</div>
               </div>
             </div>
           ))}

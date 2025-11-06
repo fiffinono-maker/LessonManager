@@ -23,7 +23,7 @@ export default function FilterBar({ onSearch, onDifficultyChange, onDurationChan
       <div className="flex-1 relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
-          placeholder="Search challenges..."
+          placeholder="Rechercher des défis..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -34,25 +34,25 @@ export default function FilterBar({ onSearch, onDifficultyChange, onDurationChan
       
       <Select onValueChange={onDifficultyChange}>
         <SelectTrigger className="w-full md:w-[180px]" data-testid="select-difficulty">
-          <SelectValue placeholder="Difficulty" />
+          <SelectValue placeholder="Difficulté" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Levels</SelectItem>
-          <SelectItem value="easy">Easy</SelectItem>
-          <SelectItem value="medium">Medium</SelectItem>
-          <SelectItem value="hard">Hard</SelectItem>
+          <SelectItem value="all">Tous niveaux</SelectItem>
+          <SelectItem value="easy">Facile</SelectItem>
+          <SelectItem value="medium">Moyen</SelectItem>
+          <SelectItem value="hard">Difficile</SelectItem>
         </SelectContent>
       </Select>
       
       <Select onValueChange={onDurationChange}>
         <SelectTrigger className="w-full md:w-[180px]" data-testid="select-duration">
-          <SelectValue placeholder="Duration" />
+          <SelectValue placeholder="Durée" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">Any Duration</SelectItem>
-          <SelectItem value="short">1-2 weeks</SelectItem>
-          <SelectItem value="medium">3-4 weeks</SelectItem>
-          <SelectItem value="long">1+ months</SelectItem>
+          <SelectItem value="all">Toute durée</SelectItem>
+          <SelectItem value="short">1-2 semaines</SelectItem>
+          <SelectItem value="medium">3-4 semaines</SelectItem>
+          <SelectItem value="long">1+ mois</SelectItem>
         </SelectContent>
       </Select>
       
@@ -61,7 +61,7 @@ export default function FilterBar({ onSearch, onDifficultyChange, onDurationChan
         data-testid="button-apply-filters"
       >
         <Filter className="w-4 h-4 mr-2" />
-        Apply
+        Appliquer
       </Button>
     </div>
   );

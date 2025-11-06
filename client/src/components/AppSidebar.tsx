@@ -20,13 +20,13 @@ import {
 } from "lucide-react";
 
 const adminItems = [
-  { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
-  { title: "Gyms", url: "/admin/gyms", icon: Building2 },
-  { title: "Exercises", url: "/admin/exercises", icon: Dumbbell },
-  { title: "Challenges", url: "/admin/challenges", icon: Trophy },
+  { title: "Tableau de bord", url: "/admin", icon: LayoutDashboard },
+  { title: "Salles", url: "/admin/gyms", icon: Building2 },
+  { title: "Exercices", url: "/admin/exercises", icon: Dumbbell },
+  { title: "Défis", url: "/admin/challenges", icon: Trophy },
   { title: "Badges", url: "/admin/badges", icon: Award },
-  { title: "Users", url: "/admin/users", icon: Users },
-  { title: "Settings", url: "/admin/settings", icon: Settings },
+  { title: "Utilisateurs", url: "/admin/users", icon: Users },
+  { title: "Paramètres", url: "/admin/settings", icon: Settings },
 ];
 
 export default function AppSidebar() {
@@ -39,13 +39,13 @@ export default function AppSidebar() {
           </div>
           <div>
             <div className="font-bold font-display">TSPark</div>
-            <div className="text-xs text-muted-foreground">Admin Panel</div>
+            <div className="text-xs text-muted-foreground">Panneau Admin</div>
           </div>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Management</SidebarGroupLabel>
+          <SidebarGroupLabel>Gestion</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {adminItems.map((item) => (

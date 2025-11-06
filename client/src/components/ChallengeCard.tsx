@@ -28,6 +28,12 @@ export default function ChallengeCard({
     hard: 'bg-red-500/10 text-red-700 dark:text-red-400'
   };
 
+  const difficultyLabels = {
+    easy: 'Facile',
+    medium: 'Moyen',
+    hard: 'Difficile'
+  };
+
   return (
     <Card 
       className="overflow-hidden hover-elevate cursor-pointer" 
@@ -42,7 +48,7 @@ export default function ChallengeCard({
         />
         <div className="absolute top-3 right-3">
           <Badge className={difficultyColors[difficulty]}>
-            {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
+            {difficultyLabels[difficulty]}
           </Badge>
         </div>
       </div>
@@ -73,7 +79,7 @@ export default function ChallengeCard({
           }}
         >
           <Flame className="w-4 h-4 mr-2" />
-          Join Challenge
+          Rejoindre le Défi
         </Button>
       </CardFooter>
     </Card>

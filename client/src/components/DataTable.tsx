@@ -38,7 +38,7 @@ export default function DataTable({ columns, data, onEdit, onDelete }: DataTable
           {data.length === 0 ? (
             <TableRow>
               <TableCell colSpan={columns.length + 1} className="text-center text-muted-foreground py-8">
-                No data available
+                Aucune donnée disponible
               </TableCell>
             </TableRow>
           ) : (
@@ -65,7 +65,7 @@ export default function DataTable({ columns, data, onEdit, onDelete }: DataTable
                         data-testid={`action-edit-${idx}`}
                       >
                         <Edit className="w-4 h-4 mr-2" />
-                        Edit
+                        Modifier
                       </DropdownMenuItem>
                       <DropdownMenuItem 
                         onClick={() => {
@@ -76,7 +76,7 @@ export default function DataTable({ columns, data, onEdit, onDelete }: DataTable
                         data-testid={`action-delete-${idx}`}
                       >
                         <Trash className="w-4 h-4 mr-2" />
-                        Delete
+                        Supprimer
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

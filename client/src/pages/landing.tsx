@@ -7,23 +7,23 @@ export default function Landing() {
   const features = [
     {
       icon: Trophy,
-      title: "Join Challenges",
-      description: "Participate in diverse fitness challenges tailored to your goals and fitness level"
+      title: "Rejoindre des Défis",
+      description: "Participez à des défis fitness variés adaptés à vos objectifs et à votre niveau"
     },
     {
       icon: Users,
-      title: "Community Driven",
-      description: "Connect with fellow fitness enthusiasts and compete in group challenges"
+      title: "Communauté Active",
+      description: "Connectez-vous avec d'autres passionnés de fitness et participez à des défis de groupe"
     },
     {
       icon: Zap,
-      title: "Track Progress",
-      description: "Monitor your workouts, calories burned, and achievements in real-time"
+      title: "Suivre vos Progrès",
+      description: "Surveillez vos entraînements, calories brûlées et accomplissements en temps réel"
     },
     {
       icon: Shield,
-      title: "Earn Rewards",
-      description: "Unlock badges and rewards as you complete challenges and reach milestones"
+      title: "Gagner des Récompenses",
+      description: "Débloquez des badges et récompenses en complétant des défis et atteignant vos objectifs"
     }
   ];
 
@@ -34,8 +34,8 @@ export default function Landing() {
       <section className="py-20 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4 font-display">Why Choose TSPark?</h2>
-            <p className="text-xl text-muted-foreground">Everything you need to achieve your fitness goals</p>
+            <h2 className="text-4xl font-bold mb-4 font-display">Pourquoi Choisir TSPark ?</h2>
+            <p className="text-xl text-muted-foreground">Tout ce dont vous avez besoin pour atteindre vos objectifs fitness</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -56,9 +56,9 @@ export default function Landing() {
 
       <section className="py-20 px-6 bg-primary/5">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-4 font-display">Ready to Start Your Journey?</h2>
+          <h2 className="text-4xl font-bold mb-4 font-display">Prêt à Commencer Votre Parcours ?</h2>
           <p className="text-xl text-muted-foreground mb-8">
-            Join thousands of fitness enthusiasts already transforming their lives
+            Rejoignez des milliers de passionnés de fitness qui transforment déjà leur vie
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <Button 
@@ -66,7 +66,7 @@ export default function Landing() {
               data-testid="button-signup"
               onClick={() => console.log('Sign up clicked')}
             >
-              Sign Up Now
+              S'inscrire Maintenant
             </Button>
             <Button 
               size="lg"
@@ -74,7 +74,7 @@ export default function Landing() {
               data-testid="button-gym-owner"
               onClick={() => console.log('Gym owner clicked')}
             >
-              I'm a Gym Owner
+              Je suis Propriétaire de Salle
             </Button>
           </div>
         </div>
