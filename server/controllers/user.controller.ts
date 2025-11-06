@@ -84,6 +84,15 @@ export class UserController {
       }
     });
 
+    router.delete('/:id', async (req: Request, res: Response) => {
+      try {
+        await this.userService.deleteUser(req.params.id);
+        res.json({ message: 'User deleted' });
+      } catch (error) {
+        res.status(400).json({ error: (error as Error).message });
+      }
+    });
+
     return router;
   }
 }

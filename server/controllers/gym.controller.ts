@@ -37,6 +37,15 @@ export class GymController {
       }
     });
 
+    router.patch('/:id', async (req: Request, res: Response) => {
+      try {
+        await this.gymService.updateGym(req.params.id, req.body);
+        res.json({ message: 'Gym updated' });
+      } catch (error) {
+        res.status(400).json({ error: (error as Error).message });
+      }
+    });
+
     router.patch('/:id/approve', async (req: Request, res: Response) => {
       try {
         await this.gymService.approveGym(req.params.id);

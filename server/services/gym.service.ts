@@ -25,6 +25,10 @@ export class GymService {
     return storage.createGym(gymData);
   }
 
+  async updateGym(id: string, gymData: Partial<InsertGym>): Promise<void> {
+    await storage.updateGym(id, gymData);
+  }
+
   async approveGym(id: string): Promise<void> {
     await storage.updateGymStatus(id, 'approved');
   }

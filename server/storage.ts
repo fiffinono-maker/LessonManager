@@ -13,6 +13,7 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUserStatus(id: string, isActive: boolean): Promise<void>;
+  deleteUser(id: string): Promise<void>;
   getAllUsers(): Promise<User[]>;
   
   getGym(id: string): Promise<Gym | undefined>;
@@ -20,6 +21,7 @@ export interface IStorage {
   getGymsByStatus(status: 'pending' | 'approved' | 'rejected'): Promise<Gym[]>;
   getAllGyms(): Promise<Gym[]>;
   createGym(gym: InsertGym): Promise<Gym>;
+  updateGym(id: string, gym: Partial<InsertGym>): Promise<void>;
   updateGymStatus(id: string, status: 'pending' | 'approved' | 'rejected'): Promise<void>;
   deleteGym(id: string): Promise<void>;
   
@@ -77,6 +79,10 @@ export class DbStorage implements IStorage {
     await db.update(users).set({ isActive }).where(eq(users.id, id));
   }
 
+  async deleteUser(id: string): Promise<void> {
+    await db.delete(users).where(eq(users.id, id));
+  }
+
   async getAllUsers(): Promise<User[]> {
     return db.select().from(users);
   }
@@ -101,6 +107,10 @@ export class DbStorage implements IStorage {
   async createGym(gym: InsertGym): Promise<Gym> {
     const result = await db.insert(gyms).values(gym).returning();
     return result[0];
+  }
+
+  async updateGym(id: string, gym: Partial<InsertGym>): Promise<void> {
+    await db.update(gyms).set(gym).where(eq(gyms.id, id));
   }
 
   async updateGymStatus(id: string, status: 'pending' | 'approved' | 'rejected'): Promise<void> {

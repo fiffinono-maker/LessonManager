@@ -21,4 +21,8 @@ export class UserService {
   async activateUser(id: string): Promise<void> {
     await storage.updateUserStatus(id, true);
   }
+
+  async deleteUser(id: string): Promise<void> {
+    await storage.deleteUser(id);
+  }
 }
